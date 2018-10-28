@@ -4,8 +4,8 @@ Usage
 
 To use MPC Boilerplate in a project::
 
-    import mpc_boilerplate
+    import mpcfit
 
 Details on the Snell's Law Function ... 
 
-.. autofunction:: mpc_boilerplate.refraction.snell
+.. autofunction:: mpcfit.refraction.snell

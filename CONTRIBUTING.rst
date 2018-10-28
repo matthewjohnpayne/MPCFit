@@ -15,7 +15,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/matthewjohnpayne/mpc_boilerplate/issues.
+Report bugs at https://github.com/matthewjohnpayne/mpcfit/issues.
 
 If you are reporting a bug, please include:
 
@@ -38,14 +38,14 @@ and "help wanted" is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-MPC Boilerplate could always use more documentation, whether as part of the
-official MPC Boilerplate docs, in docstrings, or even on the web in blog posts,
+MPC Fit could always use more documentation, whether as part of the
+official MPC Fit docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/matthewjohnpayne/mpc_boilerplate/issues.
+The best way to send feedback is to file an issue at https://github.com/matthewjohnpayne/mpcfit/issues.
 
 If you are proposing a feature:
 
@@ -57,17 +57,17 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `mpc_boilerplate` for local development.
+Ready to contribute? Here's how to set up `mpcfit` for local development.
 
-1. Fork the `mpc_boilerplate` repo on GitHub.
+1. Fork the `mpcfit` repo on GitHub.
 2. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/mpc_boilerplate.git
+    $ git clone git@github.com:your_name_here/mpcfit.git
 
 3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
 
-    $ mkvirtualenv mpc_boilerplate
-    $ cd mpc_boilerplate/
+    $ mkvirtualenv mpcfit
+    $ cd mpcfit/
     $ python setup.py develop
 
 4. Create a branch for local development::
@@ -79,7 +79,7 @@ Ready to contribute? Here's how to set up `mpc_boilerplate` for local developmen
 5. When you're done making changes, check that your changes pass flake8 and the
    tests, including testing other Python versions with tox::
 
-    $ flake8 mpc_boilerplate tests
+    $ flake8 mpcfit tests
     $ python setup.py test or py.test
     $ tox
 
@@ -103,7 +103,7 @@ Before you submit a pull request, check that it meets these guidelines:
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
 3. The pull request should work for Python 2.7, 3.4, 3.5 and 3.6, and for PyPy. Check
-   https://travis-ci.org/matthewjohnpayne/mpc_boilerplate/pull_requests
+   https://travis-ci.org/matthewjohnpayne/mpcfit/pull_requests
    and make sure that the tests pass for all supported Python versions.
 
 Tips
@@ -111,7 +111,7 @@ Tips
 
 To run a subset of tests::
 
-$ py.test tests.test_mpc_boilerplate
+$ py.test tests.test_mpcfit
 
 
 Deploying
