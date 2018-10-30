@@ -47,8 +47,6 @@ Cart = collections.namedtuple('Cart', ['x', 'y', 'z'])
 Sphr = collections.namedtuple('Sphr', ['ra', 'dec'])
 '''RA and dec in radians.'''
 
-Sphr.__str__ = lambda self: '({}, {})'.format(dms(self.ra), dms(self.dec))
-'''Sexagesimal stringer useful for debugging.'''
 
 def dms(r):
     '''Utility formatter for Sphr.__str__.'''
@@ -63,6 +61,8 @@ def dms(r):
     m -= d * 60
     return '{}{} {} {}'.format(neg, d, m, s)
 
+Sphr.__str__ = lambda self: '({}, {})'.format(dms(self.ra), dms(self.dec))
+'''Sexagesimal stringer useful for debugging.'''
 
 
 
@@ -105,11 +105,23 @@ def cartCross(a, b):
     ----------
     a, b : objects with x, y, z attributes
     '''
+    return Cart(*np.cross(a,b).tolist())   # MJP: Forcing into a Cart for now ...
+    """
     return Cart(
         a.y * b.z - a.z * b.y,
         a.z * b.x - a.x * b.z,
         a.x * b.y - a.y * b.x)
+    """
 
+def cartDot(a, b):
+    '''3D vector dot product.
+        
+        Parameters
+        ----------
+        a, b : objects with x, y, z attributes
+        '''
+    return np.inner(a,b)
+    #return a.x * b.x + a.y * b.y + a.z * b.z
 
 def cartSquare(a):
     '''a dot a
@@ -121,14 +133,6 @@ def cartSquare(a):
     return cartDot(a, a)
 
 
-def cartDot(a, b):
-    '''3D vector dot product.
-
-    Parameters
-    ----------
-    a, b : objects with x, y, z attributes
-    '''
-    return a.x * b.x + a.y * b.y + a.z * b.z
 
 
 def cartRot(rm, aa):
@@ -311,3 +315,70 @@ class GCM:
             R2D(o.dec - c.dec) * 3600,
             R2D(o.ra - c.ra) * 3600 * math.cos(c.dec)]
             for o, c in zip(so, sc)]
+
+
+class GCMNEW:
+    def __init__(self, date, RA, DEC, pos):
+        '''Fit positions and times to linear motion along a great circle.
+            
+        Parameters
+        ----------
+        date : iterable of floats
+            Iterable parallel to RA & DEC, representing times at positions.
+            Times must be on some linear time scale, for example JD or MJD.
+        RA : iterable of objects
+            Iterable parallel to date & DEC, representing right-ascention
+            RA values must be in radians.
+        DEC: iterable of objects
+            Iterable parallel to date & RA, representing declination
+        '''
+        if len(date) != len(RA):
+            raise ValueError('date and RA different lengths')
+        if len(date) != len(DEC):
+            raise ValueError('date and DEC different lengths')
+        if len(date) < 2:
+            raise ValueError('at least two positions needed')
+        if date[0] >= date[-1]:
+            raise ValueError('positive elapsed time needed')
+        if RA[0] == RA[-1] and DEC[0] == DEC[-1] :
+            raise ValueError('motion across sky needed')
+        
+        # convert RA,DEC observations to cartesian unit vectors
+        self.cartUV = np.reshape(
+                                 np.array( [np.cos(DEC) * np.cos(RA), np.cos(DEC) * np.sin(RA), np.sin(DEC)]) ,
+                                 (-1,3)
+                                 )
+
+        # vector normal to motion
+        # *** MJP : Note that at this point Sonia uses first and last points in the tracklet ( [0] & [-1] )
+        # *** MJP : May well be OK to do this, but I am slightly suspicious: why not fit generally ?
+        c = sphrToCart(pos)
+        print("pos=", pos)
+        print("c=", c)
+
+        # rotation angle is angle from norm to +z
+
+        # if norm is close to the pole already, don't mess with rotation.
+
+        # Build "rm", the rotation matrix that will rotate the coordinate system
+        # to the obs, so that a cylindrical projection will have negligible
+        # distortion.'''
+
+        # rotate all of cart
+
+        # transpose rotation array so it will derotate,
+        # after least-squares fit.
+
+        # convert back to spherical coordinates for adjustment.
+        # this does a cylindrical projection.
+
+        # normalize ra to near 0 to avoid wraparound problems
+
+        # normalize time to near 0 to maintain precision
+
+
+        # Calculate least squares
+
+        # Least squares fit not needed with just two points.
+
+

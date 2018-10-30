@@ -25,11 +25,11 @@ import pytest
 
 # Importing of local modules/packages required for this test
 # --------------------------------------------------------------
-import mpcfit.phys_const as PHYS
+#import mpcfit.phys_const as PHYS
 
 # Import the specific package/module/function we are testing
 # --------------------------------------------------------------
-from mpcfit.gcm import gcm
+import mpcfit.gcm as gcm
 
 
 # Basic test(s) of the GCM module
@@ -46,12 +46,13 @@ def sphrNear(a, b, eps):
 
 
 def test_cartCross():
+    
+    # Single input vectors
     a = gcm.Cart(1, 0, 0)
     b = gcm.Cart(0, 1, 0)
     got = gcm.cartCross(a, b)
     want = gcm.Cart(0, 0, 1)
-    eps = 1e-14
-    assert cartNear(got, want, eps)
+    assert np.allclose(got, want)
 
 
 def test_cartDot():
@@ -67,7 +68,7 @@ def test_cartSquare():
 
 def test_cartRot():
     a = gcm.Cart(0, 1, 0)
-    d30 = 30 * math.pi / 180
+    d30 = 30 * np.pi / 180
     s = math.sin(d30)
     c = math.cos(d30)
     m = [  # rotate around x axis
@@ -75,38 +76,38 @@ def test_cartRot():
         [0, c, -s],
         [0, s, c]]
     got = gcm.cartRot(m, [a])[0]
-    want = gcm.Cart(0, math.sqrt(3) / 2, .5)
+    want = gcm.Cart(0, np.sqrt(3) / 2, .5)
     eps = 1e-14
     assert cartNear(got, want, eps)
 
 
-def test_cartToSphr():
+def test_sphrToCart():
     s = [gcm.Sphr(0, 0),
-        gcm.Sphr(math.pi / 2, 0),
-        gcm.Sphr(0, math.pi / 2),
-        gcm.Sphr(math.pi / 4, 0),
-        gcm.Sphr(math.pi / 6, -math.pi / 4)]
+        gcm.Sphr(np.pi / 2, 0),
+        gcm.Sphr(0, np.pi / 2),
+        gcm.Sphr(np.pi / 4, 0),
+        gcm.Sphr(np.pi / 6, -np.pi / 4)]
     c = [gcm.Cart(1, 0, 0),
         gcm.Cart(0, 1, 0),
         gcm.Cart(0, 0, 1),
-        gcm.Cart(math.sqrt(2) / 2, math.sqrt(2) / 2, 0),
-        gcm.Cart(math.sqrt(6) / 4, math.sqrt(2) / 4, -math.sqrt(2) / 2)]
+        gcm.Cart(np.sqrt(2) / 2, np.sqrt(2) / 2, 0),
+        gcm.Cart(np.sqrt(6) / 4, np.sqrt(2) / 4, -np.sqrt(2) / 2)]
     eps = 1e-14
     for got, want in zip(gcm.sphrToCart(s), c):
         assert cartNear(got, want, eps)
 
 
-def test_sphrToCart():
+def test_cartToSphr():
     s = [gcm.Sphr(0, 0),
-        gcm.Sphr(math.pi / 2, 0),
-        gcm.Sphr(0, math.pi / 2),
-        gcm.Sphr(math.pi / 4, 0),
-        gcm.Sphr(math.pi / 6, -math.pi / 4)]
+        gcm.Sphr(np.pi / 2, 0),
+        gcm.Sphr(0, np.pi / 2),
+        gcm.Sphr(np.pi / 4, 0),
+        gcm.Sphr(np.pi / 6, -np.pi / 4)]
     c = [gcm.Cart(1, 0, 0),
         gcm.Cart(0, 1, 0),
         gcm.Cart(0, 0, 1),
-        gcm.Cart(math.sqrt(2) / 2, math.sqrt(2) / 2, 0),
-        gcm.Cart(math.sqrt(6) / 4, math.sqrt(2) / 4, -math.sqrt(2) / 2)]
+        gcm.Cart(np.sqrt(2) / 2, np.sqrt(2) / 2, 0),
+        gcm.Cart(np.sqrt(6) / 4, np.sqrt(2) / 4, -np.sqrt(2) / 2)]
     eps = 1e-14
     for got, want in zip(gcm.cartToSphr(c), s):
         assert sphrNear(got, want, eps)
@@ -120,7 +121,7 @@ def test_transpose3():
 
 
 def dmsToRad(neg, d, m, s):
-    r = ((d * 60 + m) / (180. * 60) + s / (180. * 3600)) * math.pi
+    r = ((d * 60 + m) / (180. * 60) + s / (180. * 3600)) * np.pi
     if neg == '-':
         return -r
     return r
@@ -142,7 +143,7 @@ def test_two():
     # test the method that returns just rms
     assert g.rms() == 0
 
-    # test the method that returns just both
+    # test the method that returns both
     assert g.rmsRes() == (0, [[0.0, 0.0], [0.0, 0.0]])
 
 
@@ -167,6 +168,7 @@ def test_three():
     assert near(res[1][1], 2. / 3, eps)
     assert near(res[2][0], -1. / 3, eps)
     assert near(res[2][1], -1. / 3, eps)
+    # assert(  np.allclose( res , expectedRes )  )
 
     # test the method that returns just rms
     assert near(g.rms(), 2 / 3, eps)
@@ -210,3 +212,53 @@ def test_exceptions():
     with pytest.raises(ValueError) as e:
         gcm.GCM(mjd[:2], [pos[0], pos[0]])
     assert str(e.value) == 'motion across sky needed'
+
+
+# MJP: Oct 17/28, 2018
+# I started on GCMNEW as a means to just make Sonia's GCM a little more efficient
+# But I am putting it on hold as I am uncertain about the assumptions she's making
+# (and I'd have to spend more time to get into them, that I am not sure is warrented at present)
+# - Main worry is first-to-last linearity assumption: NOT a general best-fit line
+"""
+def test_GCMNEW_A():
+    # Standard identities to use in testing
+    '''
+    s = np.array([
+        [0, 0],
+        [np.pi / 2, 0],
+        [0, np.pi / 2],
+        [np.pi / 4, 0],
+        [np.pi / 6, -np.pi / 4]])
+    c = np.array([
+                    [1, 0, 0],
+                    [0, 1, 0],
+                    [0, 0, 1],
+                    [np.sqrt(2) / 2, np.sqrt(2) / 2, 0],
+                    [np.sqrt(6) / 4, np.sqrt(2) / 4, -np.sqrt(2) / 2 ]
+                  ])
+    '''
+    s = np.array([
+        [np.pi / 4, 0],
+        [np.pi / 6, -np.pi / 4]])
+    c = np.array([
+        [np.sqrt(2) / 2, np.sqrt(2) / 2, 0],
+        [np.sqrt(6) / 4, np.sqrt(2) / 4, -np.sqrt(2) / 2 ]
+    ])
+    pos = [
+           gcm.Sphr(np.pi / 4, 0),
+           gcm.Sphr(np.pi / 6, -np.pi / 4)]
+    
+    # two position test data
+    mjd = [56123, 56123.01]
+    
+    # Test the conversion to unit vectors
+    g = gcm.GCMNEW(mjd, s[:,0], s[:,1], pos)
+    print("g.cartUV[0] , c[0]", g.cartUV[0] , c[0])
+    assert np.allclose( g.cartUV[0] , c[0] )
+    assert np.allclose( g.cartUV[1] , c[1] )
+    #print(g.cartUV)
+
+    assert False
+"""
+
+
