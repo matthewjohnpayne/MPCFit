@@ -102,6 +102,8 @@ class FIT:
         Will call MPCAdvancer function to get heliocentric
         Will call MPCSky function to get sky-plane
         
+        *** This needs to be generalized to allow for calculation and return of derivatives ***
+        
         Parameters
         ----------
         x_Vec       :       ndarray
@@ -161,7 +163,7 @@ class FIT:
         '''
         # Conceptually we could get a lest-squares fit as follows ...
         # (this is not yet using jacobian approach) 
-        res_lsq = least_squares(get_residuals, x_VecInit, args=(t_Vec, d_Vec, params))
+        # res_lsq = least_squares(get_residuals, x_VecInit, args=(t_Vec, d_Vec, params))
         
         pass
 
@@ -173,7 +175,7 @@ class FIT:
         
         Explicit evaluation of design matrix, 
         application of differential correction, etc,
-        following Milani / Farnocchia / etc
+        following Milani / Farnocchia / Bernstein / etc
         
         Parameters
         ----------
@@ -187,7 +189,8 @@ class FIT:
         
         '''
         pass
-        
+        #
+    
 
 
     def function_to_do_outlier_rejection_and-or_deal_with_non_convergence_and_hence_do_multiple_iterations_of_get_best_fit_XXX():
